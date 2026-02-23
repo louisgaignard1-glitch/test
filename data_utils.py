@@ -15,5 +15,5 @@ def get_data(tickers, start_date):
 
         return data.dropna(how="all")
     except Exception as e:
-        print(f"Erreur lors de la récupération des données : {e}")
+        print(e)
         return pd.DataFrame()
