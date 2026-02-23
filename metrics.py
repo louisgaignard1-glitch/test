@@ -1,10 +1,8 @@
-
 import streamlit as st
+from optimization import calculate_sharpe_ratio, calculate_max_drawdown
 
 def display_metrics(result_min_var, mu, Sigma, returns):
     if result_min_var.success:
-        from optimization import calculate_sharpe_ratio, calculate_max_drawdown
-
         weights = result_min_var.x
         portfolio_returns = returns.dot(weights)
 
