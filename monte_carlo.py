@@ -4,22 +4,15 @@ import streamlit as st
 
 
 def make_positive_semidefinite(matrix):
-    """
-    Force une matrice à être positive semi-définie
-    pour éviter les erreurs SVD dans numpy.
-    """
+
     matrix = np.array(matrix)
 
-    # Symétrisation
     matrix = (matrix + matrix.T) / 2
 
-    # Décomposition en valeurs propres
     eigvals, eigvecs = np.linalg.eigh(matrix)
 
-    # Remplacer les valeurs propres négatives par 0
     eigvals[eigvals < 0] = 0
 
-    # Reconstruction
     matrix_psd = eigvecs @ np.diag(eigvals) @ eigvecs.T
 
     return matrix_psd
@@ -31,13 +24,13 @@ def monte_carlo_simulation(mu, Sigma, allocation, n_simulations=400, n_days=252)
     weights = allocation['Poids'].reindex(mu.index).fillna(0).values
 
     mu_daily = mu / 252
+
     Sigma_daily = Sigma / 252
 
-    # Nettoyage de Sigma
     Sigma_daily = Sigma_daily.fillna(0)
+
     Sigma_daily = make_positive_semidefinite(Sigma_daily.values)
 
-    # Petite régularisation numérique
     Sigma_daily += np.eye(len(Sigma_daily)) * 1e-10
 
     simulations = np.zeros((n_days, n_simulations))
