@@ -18,7 +18,51 @@ st.title("📈 Louis GAIGNARD Portfolio Optimization with Python (Markowitz, Mon
 
 assets = st.multiselect(
     "Select your assets",
-    options=["ENGI.PA", "BNP.PA", "ACA.PA", "GLE.PA", "TTE.PA", "MC.PA", "OR.PA", "AIR.PA", "RNO.PA", "VK.PA"],
+    options=[
+"ENGI.PA",  # Engie
+"BNP.PA",   # BNP Paribas
+"ACA.PA",   # Crédit Agricole
+"GLE.PA",   # Société Générale
+"TTE.PA",   # TotalEnergies
+"MC.PA",    # LVMH
+"OR.PA",    # L'Oréal
+"AIR.PA",   # Airbus
+"RNO.PA",   # Renault
+"VK.PA",    # Vallourec
+
+# Luxe
+"KER.PA",   # Kering
+"RMS.PA",   # Hermès
+
+# Industrie / Aéronautique
+"SAF.PA",   # Safran
+"HO.PA",    # Thales
+"SU.PA",    # Schneider Electric
+"CAP.PA",   # Capgemini
+"STMPA.PA", # STMicroelectronics
+
+# Énergie / utilities
+"EDF.PA",   # EDF
+"VIE.PA",   # Veolia
+"EN.PA",    # Bouygues
+
+# Santé / pharma
+"SAN.PA",   # Sanofi
+
+# Matériaux / construction
+"SGO.PA",   # Saint-Gobain
+
+# Telecom
+"ORA.PA",   # Orange
+
+# Distribution
+"CA.PA",    # Carrefour
+"RI.PA",    # Pernod Ricard
+
+# Autres grandes caps
+"DG.PA",    # Vinci
+"AI.PA",    # Air Liquide
+],
     default=["ENGI.PA", "BNP.PA", "TTE.PA", "MC.PA", "GLE.PA","VK.PA","ACA.PA","RNO.PA"]
 )
 
