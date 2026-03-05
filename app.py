@@ -31,11 +31,21 @@ if data.empty:
     st.error("No data available for the selected assets and dates.")
     st.stop()
 
-returns = data.pct_change().dropna()
+returns = data.pct_change().fillna(0)  # ou .dropna() si vous préférez supprimer les lignes
+
 mu = returns.mean() * 252
 Sigma = returns.cov() * 252
 
 result_min_var, allocation = optimize_portfolio(mu, Sigma, assets)
+
+st.write("Vérification des données manquantes dans mu :")
+st.write(mu.isna().sum())
+
+st.write("Vérification des données manquantes dans Sigma :")
+st.write(Sigma.isna().sum().sum())
+
+st.write("Vérification des données manquantes dans returns :")
+st.write(returns.isna().sum())
 
 st.header("🎛️ Manual Allocation")
 
