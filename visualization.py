@@ -43,8 +43,7 @@ def plot_efficient_frontier(result_min_var, mu, Sigma, assets):
 
 
 
-
-    def plot_sector_allocation(allocation):
+def plot_sector_allocation(allocation):
 
     sectors = {
         "ENGI.PA": "Énergie",
