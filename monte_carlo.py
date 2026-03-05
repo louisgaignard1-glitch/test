@@ -14,8 +14,16 @@ def monte_carlo_simulation(mu, Sigma, allocation, n_simulations=400, n_days=252)
 
     simulations = np.zeros((n_days, n_simulations))
 
+    # Décomposition de Cholesky pour une meilleure stabilité
+    try:
+        L = np.linalg.cholesky(Sigma_daily)
+    except np.linalg.LinAlgError:
+        st.error("La matrice de covariance n'est pas inversible. Vérifiez les données.")
+        return {}, np.nan, np.nan
+
     for s in range(n_simulations):
-        shock = np.random.multivariate_normal(mu_daily, Sigma_daily, n_days)
+        z = np.random.normal(size=n_days * len(mu_daily)).reshape(n_days, len(mu_daily))
+        shock = mu_daily + z @ L.T
         simulations[:, s] = shock @ weights
 
     cumulative = (1 + simulations).cumprod(axis=0)
