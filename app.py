@@ -81,6 +81,14 @@ st.line_chart(portfolio_performance)
 st.header("🔮 Monte Carlo Simulation (Fan Chart, VaR & CVaR)")
 n_sim = st.sidebar.slider("Monte Carlo simulations", 100, 800, 300)
 
+
+# Vérification des données
+if mu.isna().any() or Sigma.isna().any().any():
+    st.error("Les données de rendement ou de covariance contiennent des valeurs manquantes. Vérifiez les données.")
+    st.stop()
+
+
+
 percentiles, var_95, cvar_95 = monte_carlo_simulation(mu, Sigma, weights_used)
 
 col1, col2 = st.columns(2)
