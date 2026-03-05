@@ -33,6 +33,6 @@ def plot_sector_allocation(allocation):
     st.bar_chart(sector_allocation)
 
 def plot_correlation_matrix(returns):
-    corr_matrix = returns.corr()
+    corr_matrix = returns.corr().fillna(0)
     fig = go.Figure(data=go.Heatmap(z=corr_matrix.values, x=corr_matrix.columns, y=corr_matrix.columns))
     st.plotly_chart(fig)
