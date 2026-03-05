@@ -9,6 +9,9 @@ def monte_carlo_simulation(mu, Sigma, allocation, n_simulations=400, n_days=252)
     mu_daily = mu / 252
     Sigma_daily = Sigma / 252
 
+    # Ajouter une petite valeur à la diagonale pour éviter les problèmes numériques
+    Sigma_daily += 1e-6 * np.eye(len(Sigma_daily))
+
     simulations = np.zeros((n_days, n_simulations))
 
     for s in range(n_simulations):
