@@ -72,33 +72,44 @@ result_min_var, allocation = optimize_portfolio(mu, Sigma, assets)
 
 st.header("🎛️ Manual Allocation")
 
-# Initialisation des poids manuels
-if 'manual_weights' not in st.session_state:
-    st.session_state.manual_weights = pd.Series(
-        {asset: float(allocation.loc[asset, "Poids"]) for asset in assets}
-    )
+# Initialisation des sliders dans session_state
+if "manual_weights" not in st.session_state:
+    st.session_state.manual_weights = {
+        asset: float(allocation.loc[asset, "Poids"]) for asset in assets
+    }
 
 # Affichage des sliders
 cols = st.columns(len(assets))
 for i, asset in enumerate(assets):
+
     st.session_state.manual_weights[asset] = cols[i].slider(
         asset,
         0.0,
         1.0,
-        float(st.session_state.manual_weights[asset]),
+        float(st.session_state.manual_weights.get(asset, 0)),
         key=f"slider_{asset}"
     )
 
-st.write(f"Weight sum: {st.session_state.manual_weights.sum():.2f}")
+# Somme des poids
+weights_series = pd.Series(st.session_state.manual_weights)
 
-# Bouton de normalisation
+st.write(f"Weight sum: {weights_series.sum():.2f}")
+
+# Bouton Normalize
 if st.button("Normalize weights"):
-    st.session_state.manual_weights = st.session_state.manual_weights / st.session_state.manual_weights.sum()
-    # Force Streamlit à recalculer les sliders avec les nouveaux poids
+
+    normalized = weights_series / weights_series.sum()
+
+    for asset in assets:
+        st.session_state.manual_weights[asset] = float(normalized[asset])
+        st.session_state[f"slider_{asset}"] = float(normalized[asset])
+
     st.rerun()
 
-# Création du DataFrame pour l'allocation manuelle
-manual_allocation = pd.DataFrame({"Poids": st.session_state.manual_weights})
+# DataFrame final
+manual_allocation = pd.DataFrame({
+    "Poids": pd.Series(st.session_state.manual_weights)
+})
 
 use_manual = st.toggle("Use manual allocation", True)
 
