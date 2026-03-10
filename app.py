@@ -70,15 +70,13 @@ if mu.isna().any() or Sigma.isna().any().any():
 
 result_min_var, allocation = optimize_portfolio(mu, Sigma, assets)
 
-st.header("🎛️ Manual Allocation")
+sst.header("🎛️ Manual Allocation")
 
 # Initialisation des poids manuels
 if 'manual_weights' not in st.session_state:
     st.session_state.manual_weights = pd.Series(
         {asset: float(allocation.loc[asset, "Poids"]) for asset in assets}
     )
-
-manual_weights = st.session_state.manual_weights
 
 cols = st.columns(len(assets))
 
@@ -91,12 +89,14 @@ st.write(f"Weight sum: {st.session_state.manual_weights.sum():.2f}")
 
 if st.button("Normalize weights"):
     st.session_state.manual_weights = st.session_state.manual_weights / st.session_state.manual_weights.sum()
+    st.rerun()  # Rafraîchit l'application pour refléter les changements
 
 manual_allocation = pd.DataFrame({"Poids": st.session_state.manual_weights})
 
 use_manual = st.toggle("Use manual allocation", True)
 
 weights_used = manual_allocation if use_manual else allocation
+
 
 fig_alloc = go.Figure()
 fig_alloc.add_trace(go.Bar(x=allocation.index, y=allocation["Poids"], name="Optimized"))
