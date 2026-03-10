@@ -89,7 +89,7 @@ st.write(f"Weight sum: {st.session_state.manual_weights.sum():.2f}")
 
 if st.button("Normalize weights"):
     st.session_state.manual_weights = st.session_state.manual_weights / st.session_state.manual_weights.sum()
-    st.rerun()  # Rafraîchit l'application pour refléter les changements
+    st.rerun()
 
 manual_allocation = pd.DataFrame({"Poids": st.session_state.manual_weights})
 
