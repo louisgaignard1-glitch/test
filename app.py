@@ -30,6 +30,11 @@ if len(assets) < 2:
     st.warning("Please select at least 2 assets.")
     st.stop()
 
+
+# --------------------------------------------------
+# DATA
+# --------------------------------------------------
+
 data = get_data(assets, "2022-01-01")
 
 if data.empty:
@@ -43,13 +48,14 @@ Sigma = returns.cov() * 252
 
 result_min_var, allocation = optimize_portfolio(mu, Sigma, assets)
 
-# ---------------------------------------------------
+
+# --------------------------------------------------
 # MANUAL ALLOCATION
-# ---------------------------------------------------
+# --------------------------------------------------
 
 st.header("🎛️ Manual Allocation")
 
-# Initialisation des sliders
+# Initialisation session_state
 for asset in assets:
 
     key = f"slider_{asset}"
@@ -58,7 +64,7 @@ for asset in assets:
         st.session_state[key] = float(allocation.loc[asset, "Poids"])
 
 
-# Affichage des sliders
+# Sliders
 cols = st.columns(len(assets))
 
 for i, asset in enumerate(assets):
@@ -73,40 +79,17 @@ for i, asset in enumerate(assets):
     )
 
 
-# récupération des poids
+# récupération poids
 weights = np.array([st.session_state[f"slider_{a}"] for a in assets])
 
 st.write(f"Weight sum: {weights.sum():.2f}")
 
 
-# ------------------------------------------------
-# NORMALIZE
-# ------------------------------------------------
-
-if st.button("Normalize weights"):
-
-    total = weights.sum()
-
-    if total > 0:
-
-        normalized = weights / total
-
-        for i, asset in enumerate(assets):
-            st.session_state[f"slider_{asset}"] = float(normalized[i])
-
-    st.rerun()
-
-
-# DataFrame allocation manuelle
-manual_allocation = pd.DataFrame(
-    {"Poids": [st.session_state[f"slider_{a}"] for a in assets]},
-    index=assets
-)
-# ---------------------------------------------------
+# --------------------------------------------------
 # NORMALIZE BUTTON
-# ---------------------------------------------------
+# --------------------------------------------------
 
-if st.button("Normalize weights"):
+if st.button("Normalize weights", key="normalize_button"):
 
     total = weights.sum()
 
@@ -120,7 +103,7 @@ if st.button("Normalize weights"):
 
     st.rerun()
 
-# allocation manuelle
+
 manual_allocation = pd.DataFrame(
     {"Poids":[st.session_state[f"slider_{a}"] for a in assets]},
     index=assets
@@ -130,9 +113,10 @@ use_manual = st.toggle("Use manual allocation", True)
 
 weights_used = manual_allocation if use_manual else allocation
 
-# ---------------------------------------------------
+
+# --------------------------------------------------
 # ALLOCATION GRAPH
-# ---------------------------------------------------
+# --------------------------------------------------
 
 fig_alloc = go.Figure()
 
@@ -156,33 +140,37 @@ fig_alloc.update_layout(
 
 st.plotly_chart(fig_alloc, use_container_width=True)
 
-# ---------------------------------------------------
+
+# --------------------------------------------------
 # METRICS
-# ---------------------------------------------------
+# --------------------------------------------------
 
 display_metrics(result_min_var, mu, Sigma, returns)
 
 plot_efficient_frontier(result_min_var, mu, Sigma, assets)
 
-# ---------------------------------------------------
+
+# --------------------------------------------------
 # SECTOR
-# ---------------------------------------------------
+# --------------------------------------------------
 
 st.header("📊 Sector Allocation")
 
 plot_sector_allocation(weights_used)
 
-# ---------------------------------------------------
+
+# --------------------------------------------------
 # CORRELATION
-# ---------------------------------------------------
+# --------------------------------------------------
 
 st.header("🔗 Asset Correlation Matrix")
 
 plot_correlation_matrix(returns)
 
-# ---------------------------------------------------
+
+# --------------------------------------------------
 # BACKTEST
-# ---------------------------------------------------
+# --------------------------------------------------
 
 st.header("📈 Historical Cumulative Performance")
 
@@ -190,9 +178,10 @@ portfolio_performance = backtest_portfolio(data, weights_used)
 
 st.line_chart(portfolio_performance)
 
-# ---------------------------------------------------
+
+# --------------------------------------------------
 # MONTE CARLO
-# ---------------------------------------------------
+# --------------------------------------------------
 
 st.header("🔮 Monte Carlo Simulation")
 
@@ -209,6 +198,7 @@ col1,col2 = st.columns(2)
 
 col1.metric("VaR 95%",f"{var_95:.2%}")
 col2.metric("CVaR 95%",f"{cvar_95:.2%}")
+
 
 fig = go.Figure()
 
@@ -255,4 +245,4 @@ fig.update_layout(
     template="plotly_dark"
 )
 
-st.plotly_chart(fig,use_container_width=True)
+st.plotly_chart(fig, use_container_width=True)
