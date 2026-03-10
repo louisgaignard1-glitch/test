@@ -94,7 +94,8 @@ st.write(f"Weight sum: {st.session_state.manual_weights.sum():.2f}")
 # Bouton de normalisation
 if st.button("Normalize weights"):
     st.session_state.manual_weights = st.session_state.manual_weights / st.session_state.manual_weights.sum()
-    st.write(f"Poids normalisés. Nouvelle somme: {st.session_state.manual_weights.sum():.2f}")
+    # Force Streamlit à recalculer les sliders avec les nouveaux poids
+    st.rerun()
 
 # Création du DataFrame pour l'allocation manuelle
 manual_allocation = pd.DataFrame({"Poids": st.session_state.manual_weights})
@@ -102,8 +103,6 @@ manual_allocation = pd.DataFrame({"Poids": st.session_state.manual_weights})
 use_manual = st.toggle("Use manual allocation", True)
 
 weights_used = manual_allocation if use_manual else allocation
-
-
 
 fig_alloc = go.Figure()
 fig_alloc.add_trace(go.Bar(x=allocation.index, y=allocation["Poids"], name="Optimized"))
