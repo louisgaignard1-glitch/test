@@ -80,22 +80,30 @@ if 'manual_weights' not in st.session_state:
 
 cols = st.columns(len(assets))
 
+# Mise à jour des sliders avec les poids actuels
 for i, asset in enumerate(assets):
     st.session_state.manual_weights[asset] = cols[i].slider(
-        asset, 0.0, 1.0, float(st.session_state.manual_weights[asset]), key=f"slider_{asset}"
+        asset,
+        0.0,
+        1.0,
+        float(st.session_state.manual_weights[asset]),
+        key=f"slider_{asset}"
     )
 
 st.write(f"Weight sum: {st.session_state.manual_weights.sum():.2f}")
 
+# Bouton de normalisation
 if st.button("Normalize weights"):
     st.session_state.manual_weights = st.session_state.manual_weights / st.session_state.manual_weights.sum()
-    st.rerun()
+    st.experimental_rerun()  # Rafraîchit l'application
 
+# Création du DataFrame pour l'allocation manuelle
 manual_allocation = pd.DataFrame({"Poids": st.session_state.manual_weights})
 
 use_manual = st.toggle("Use manual allocation", True)
 
 weights_used = manual_allocation if use_manual else allocation
+
 
 
 fig_alloc = go.Figure()
