@@ -19,51 +19,35 @@ st.title("📈 Louis GAIGNARD Portfolio Optimization with Python (Markowitz, Mon
 assets = st.multiselect(
     "Select your assets",
     options=[
-"ENGI.PA",  # Engie
-"BNP.PA",   # BNP Paribas
-"ACA.PA",   # Crédit Agricole
-"GLE.PA",   # Société Générale
-"TTE.PA",   # TotalEnergies
-"MC.PA",    # LVMH
-"OR.PA",    # L'Oréal
-"AIR.PA",   # Airbus
-"RNO.PA",   # Renault
-"VK.PA",    # Vallourec
-
-# Luxe
-"KER.PA",   # Kering
-"RMS.PA",   # Hermès
-
-# Industrie / Aéronautique
-"SAF.PA",   # Safran
-"HO.PA",    # Thales
-"SU.PA",    # Schneider Electric
-"CAP.PA",   # Capgemini
-"STMPA.PA", # STMicroelectronics
-
-# Énergie / utilities
-"EDF.PA",   # EDF
-"VIE.PA",   # Veolia
-"EN.PA",    # Bouygues
-
-# Santé / pharma
-"SAN.PA",   # Sanofi
-
-# Matériaux / construction
-"SGO.PA",   # Saint-Gobain
-
-# Telecom
-"ORA.PA",   # Orange
-
-# Distribution
-"CA.PA",    # Carrefour
-"RI.PA",    # Pernod Ricard
-
-# Autres grandes caps
-"DG.PA",    # Vinci
-"AI.PA",    # Air Liquide
-],
-    default=["ENGI.PA", "BNP.PA", "TTE.PA", "MC.PA", "GLE.PA","VK.PA","ACA.PA","RNO.PA"]
+        "ENGI.PA",  # Engie
+        "BNP.PA",   # BNP Paribas
+        "ACA.PA",   # Crédit Agricole
+        "GLE.PA",   # Société Générale
+        "TTE.PA",   # TotalEnergies
+        "MC.PA",    # LVMH
+        "OR.PA",    # L'Oréal
+        "AIR.PA",   # Airbus
+        "RNO.PA",   # Renault
+        "VK.PA",    # Vallourec
+        "KER.PA",   # Kering
+        "RMS.PA",   # Hermès
+        "SAF.PA",   # Safran
+        "HO.PA",    # Thales
+        "SU.PA",    # Schneider Electric
+        "CAP.PA",   # Capgemini
+        "STMPA.PA", # STMicroelectronics
+        "EDF.PA",   # EDF
+        "VIE.PA",   # Veolia
+        "EN.PA",    # Bouygues
+        "SAN.PA",   # Sanofi
+        "SGO.PA",   # Saint-Gobain
+        "ORA.PA",   # Orange
+        "CA.PA",    # Carrefour
+        "RI.PA",    # Pernod Ricard
+        "DG.PA",    # Vinci
+        "AI.PA",    # Air Liquide
+    ],
+    default=["ENGI.PA", "BNP.PA", "TTE.PA", "MC.PA", "GLE.PA", "VK.PA", "ACA.PA", "RNO.PA"]
 )
 
 if len(assets) < 2:
@@ -75,31 +59,40 @@ if data.empty:
     st.error("No data available for the selected assets and dates.")
     st.stop()
 
-returns = data.pct_change().dropna()
-
+returns = data.pct_change().fillna(0)  # Remplace les NaN par 0
 mu = returns.mean() * 252
 Sigma = returns.cov() * 252
+
+# Vérification des données manquantes
+if mu.isna().any() or Sigma.isna().any().any():
+    st.error("Les données de rendement ou de covariance contiennent des valeurs manquantes. Vérifiez les données.")
+    st.stop()
 
 result_min_var, allocation = optimize_portfolio(mu, Sigma, assets)
 
 st.header("🎛️ Manual Allocation")
 
-manual_weights = {}
+# Initialisation des poids manuels
+if 'manual_weights' not in st.session_state:
+    st.session_state.manual_weights = pd.Series(
+        {asset: float(allocation.loc[asset, "Poids"]) for asset in assets}
+    )
+
+manual_weights = st.session_state.manual_weights
+
 cols = st.columns(len(assets))
 
 for i, asset in enumerate(assets):
-    manual_weights[asset] = cols[i].slider(
-        asset, 0.0, 1.0, float(allocation.loc[asset, "Poids"]), key=f"slider_{asset}"
+    st.session_state.manual_weights[asset] = cols[i].slider(
+        asset, 0.0, 1.0, float(st.session_state.manual_weights[asset]), key=f"slider_{asset}"
     )
 
-manual_weights = pd.Series(manual_weights)
-
-st.write(f"Weight sum: {manual_weights.sum():.2f}")
+st.write(f"Weight sum: {st.session_state.manual_weights.sum():.2f}")
 
 if st.button("Normalize weights"):
-    manual_weights = manual_weights / manual_weights.sum()
+    st.session_state.manual_weights = st.session_state.manual_weights / st.session_state.manual_weights.sum()
 
-manual_allocation = pd.DataFrame({"Poids": manual_weights})
+manual_allocation = pd.DataFrame({"Poids": st.session_state.manual_weights})
 
 use_manual = st.toggle("Use manual allocation", True)
 
