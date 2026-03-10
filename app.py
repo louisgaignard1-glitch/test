@@ -80,15 +80,20 @@ if "manual_weights" not in st.session_state:
 
 # Affichage des sliders
 cols = st.columns(len(assets))
+
 for i, asset in enumerate(assets):
 
-    st.session_state.manual_weights[asset] = cols[i].slider(
+    value = st.session_state.manual_weights.get(asset, 0)
+
+    slider_value = cols[i].slider(
         asset,
         0.0,
         1.0,
-        float(st.session_state.manual_weights.get(asset, 0)),
+        float(value),
         key=f"slider_{asset}"
     )
+
+    st.session_state.manual_weights[asset] = slider_value
 
 # Somme des poids
 weights_series = pd.Series(st.session_state.manual_weights)
