@@ -95,7 +95,6 @@ st.write(f"Weight sum: {st.session_state.manual_weights.sum():.2f}")
 # Bouton de normalisation
 if st.button("Normalize weights"):
     st.session_state.manual_weights = st.session_state.manual_weights / st.session_state.manual_weights.sum()
-    st.experimental_rerun()  # Rafraîchit l'application
 
 # Création du DataFrame pour l'allocation manuelle
 manual_allocation = pd.DataFrame({"Poids": st.session_state.manual_weights})
@@ -103,7 +102,6 @@ manual_allocation = pd.DataFrame({"Poids": st.session_state.manual_weights})
 use_manual = st.toggle("Use manual allocation", True)
 
 weights_used = manual_allocation if use_manual else allocation
-
 
 
 fig_alloc = go.Figure()
