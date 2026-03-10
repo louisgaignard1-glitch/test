@@ -49,34 +49,59 @@ result_min_var, allocation = optimize_portfolio(mu, Sigma, assets)
 
 st.header("🎛️ Manual Allocation")
 
-# Initialisation sliders
+# Initialisation des sliders
 for asset in assets:
 
     key = f"slider_{asset}"
 
     if key not in st.session_state:
-        st.session_state[key] = float(allocation.loc[asset,"Poids"])
+        st.session_state[key] = float(allocation.loc[asset, "Poids"])
 
 
+# Affichage des sliders
 cols = st.columns(len(assets))
 
 for i, asset in enumerate(assets):
 
     key = f"slider_{asset}"
 
-    st.session_state[key] = cols[i].slider(
+    cols[i].slider(
         asset,
-        0.0,
-        1.0,
-        st.session_state[key],
+        min_value=0.0,
+        max_value=1.0,
         key=key
     )
 
-# récupération poids
+
+# récupération des poids
 weights = np.array([st.session_state[f"slider_{a}"] for a in assets])
 
 st.write(f"Weight sum: {weights.sum():.2f}")
 
+
+# ------------------------------------------------
+# NORMALIZE
+# ------------------------------------------------
+
+if st.button("Normalize weights"):
+
+    total = weights.sum()
+
+    if total > 0:
+
+        normalized = weights / total
+
+        for i, asset in enumerate(assets):
+            st.session_state[f"slider_{asset}"] = float(normalized[i])
+
+    st.rerun()
+
+
+# DataFrame allocation manuelle
+manual_allocation = pd.DataFrame(
+    {"Poids": [st.session_state[f"slider_{a}"] for a in assets]},
+    index=assets
+)
 # ---------------------------------------------------
 # NORMALIZE BUTTON
 # ---------------------------------------------------
