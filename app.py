@@ -70,7 +70,7 @@ if mu.isna().any() or Sigma.isna().any().any():
 
 result_min_var, allocation = optimize_portfolio(mu, Sigma, assets)
 
-sst.header("🎛️ Manual Allocation")
+st.header("🎛️ Manual Allocation")
 
 # Initialisation des poids manuels
 if 'manual_weights' not in st.session_state:
