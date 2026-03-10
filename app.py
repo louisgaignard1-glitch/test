@@ -100,12 +100,11 @@ if st.button("Normalize weights"):
 
     normalized = weights_series / weights_series.sum()
 
-    for asset in assets:
-        st.session_state.manual_weights[asset] = float(normalized[asset])
-        st.session_state[f"slider_{asset}"] = float(normalized[asset])
+    # mise à jour uniquement des poids
+    st.session_state.manual_weights = normalized.to_dict()
 
     st.rerun()
-
+    
 # DataFrame final
 manual_allocation = pd.DataFrame({
     "Poids": pd.Series(st.session_state.manual_weights)
