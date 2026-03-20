@@ -39,8 +39,8 @@ shocks = np.random.multivariate_normal(
     mean=mu_daily.values,
     cov=Sigma_daily,
     size=(n_simulations, n_days)
-)  # shape: (n_simulations, n_days, n_assets)
-simulations = (shocks @ weights).T  # shape: (n_days, n_simulations)
+)  
+simulations = (shocks @ weights).T  
 
     cumulative = (1 + simulations).cumprod(axis=0)
 
