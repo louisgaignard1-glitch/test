@@ -35,12 +35,16 @@ def monte_carlo_simulation(mu, Sigma, allocation, n_simulations=400, n_days=252)
 
     simulations = np.zeros((n_days, n_simulations))
 
-shocks = np.random.multivariate_normal(
-    mean=mu_daily.values,
-    cov=Sigma_daily,
-    size=(n_simulations, n_days)
-)  
-simulations = (shocks @ weights).T  
+    for s in range(n_simulations):
+
+        shock = np.random.multivariate_normal(
+            mean=mu_daily.values,
+            cov=Sigma_daily,
+            size=n_days,
+            check_valid='ignore'
+        )
+
+        simulations[:, s] = shock @ weights
 
     cumulative = (1 + simulations).cumprod(axis=0)
 
